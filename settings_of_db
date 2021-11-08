@@ -1,0 +1,96 @@
+create database crm
+    with owner postgres;
+
+create schema schema_crm;
+
+alter schema schema_crm owner to postgres;
+
+create table schema_crm."EmployeesDATATable"
+(
+    id             serial
+        constraint employeesdatatable_pk
+            primary key,
+    name           text                          not null,
+    contact_number text                          not null,
+    email          text                          not null,
+    post_mail      text,
+    role           text default 'Employee'::text not null
+);
+
+alter table schema_crm."EmployeesDATATable"
+    owner to postgres;
+
+create unique index employeesdatatable_id_uindex
+    on schema_crm."EmployeesDATATable" (id);
+
+create unique index employeesdatatable_contact_number_uindex
+    on schema_crm."EmployeesDATATable" (contact_number);
+
+create unique index employeesdatatable_email_uindex
+    on schema_crm."EmployeesDATATable" (email);
+
+create unique index employeesdatatable_name_uindex
+    on schema_crm."EmployeesDATATable" (name);
+
+create table schema_crm."ClientsDATATable"
+(
+    id             serial
+        constraint clientsdatatable_pk
+            primary key,
+    name           text                        not null,
+    contact_number text                        not null,
+    email          text,
+    address        text,
+    face           text,
+    company        text,
+    client         text default 'active'::text not null
+);
+
+alter table schema_crm."ClientsDATATable"
+    owner to postgres;
+
+create table schema_crm."TasksTable"
+(
+    id             serial
+        constraint taskstable_pk
+            primary key,
+    order_name     text                                not null,
+    contact_number text                                not null
+        constraint to_employer
+            references schema_crm."ClientsDATATable" (contact_number),
+    title          text                                not null,
+    description    text,
+    address        text,
+    author_name    text                                not null
+        constraint to_author
+            references schema_crm."EmployeesDATATable" (name),
+    executor_name  text                                not null
+        constraint to_executor
+            references schema_crm."EmployeesDATATable" (name),
+    priority       text      default 'medium'::text    not null,
+    in_work        boolean   default true              not null,
+    type           text                                not null,
+    created        timestamp default CURRENT_TIMESTAMP not null,
+    completed      timestamp
+);
+
+alter table schema_crm."TasksTable"
+    owner to postgres;
+
+create unique index taskstable_contact_number_uindex
+    on schema_crm."TasksTable" (contact_number);
+
+create unique index taskstable_id_uindex
+    on schema_crm."TasksTable" (id);
+
+create unique index clientsdatatable_contact_number_uindex
+    on schema_crm."ClientsDATATable" (contact_number);
+
+create unique index clientsdatatable_email_uindex
+    on schema_crm."ClientsDATATable" (email);
+
+create unique index clientsdatatable_id_uindex
+    on schema_crm."ClientsDATATable" (id);
+
+grant delete, insert, references, select, trigger, truncate, update on schema_crm."ClientsDATATable" to manager;
+
