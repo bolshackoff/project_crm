@@ -1,5 +1,5 @@
 import psycopg2
-conn = psycopg2.connect(dbname='crm', user='postgres', password='fe13gr79', host='localhost')
+conn = psycopg2.connect(dbname='crm', user='postgres', password='postegres', host='localhost')
 cursor = conn.cursor()
 name = input('Имя и Фамилия: ')
 contact_number = int(input('Телефон +7'))
